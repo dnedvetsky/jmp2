@@ -1,8 +1,10 @@
+package example;
+
 import factory.SQLQueryBuilderFactory;
 import sqlbuilder.BuilderHelper;
 import sqlbuilder.SQLQueryBuilder;
 
-public class main {
+public class Main {
     public static void main(String[] args) {
         System.out.println(new BuilderHelper(SQLQueryBuilderFactory.DB.MSSQL).buildRequiredSQL());
         System.out.println();

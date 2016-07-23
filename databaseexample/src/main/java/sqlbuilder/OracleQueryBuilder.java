@@ -13,7 +13,6 @@ import factory.SQLQueryBuilderFactory;
  * LIMIT 5
  */
 public class OracleQueryBuilder extends SQLQueryBuilder {
-    private SqlQuery sqlQuery = new SqlQuery();
 
 
     /**
@@ -22,5 +21,4 @@ public class OracleQueryBuilder extends SQLQueryBuilder {
     public OracleQueryBuilder() {
         super(SQLQueryBuilderFactory.DB.ORACLE.getValue());
     }
-
 }

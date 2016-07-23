@@ -20,10 +20,10 @@ public class SQLQueryBuilderFactory {
     }
 
     /**
-     * Creates instance of MsSQLQueryBuilder with specified LIMITER;
+     * Creates instance of SQLQueryBuilder with specified LIMITER;
      * It is possible to return exact class representation of MySQL Oracle or MsSQL just by implementing inheritance;
-     * @param factoryType
-     * @return
+     * @param factoryType - type of Query Builder returned;
+     * @return {@link SQLQueryBuilder} concrete instance
      */
     public static SQLQueryBuilder createSqlQueryBuilder(DB factoryType) {
         SQLQueryBuilder factoredBuilder = null;

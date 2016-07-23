@@ -13,7 +13,6 @@ import factory.SQLQueryBuilderFactory;
  * LIMIT 5
  */
 public class MsSQLQueryBuilder extends SQLQueryBuilder {
-    private SqlQuery sqlQuery = new SqlQuery();
 
     /**
      * Constructor. Uses top to set type of limiter depending on Database type
