@@ -1,7 +1,6 @@
 package example;
 
 import factory.SQLQueryBuilderFactory;
-import sqlbuilder.BuilderHelper;
 import sqlbuilder.SQLQueryBuilder;
 
 public class Main {
@@ -16,8 +15,21 @@ public class Main {
         System.out.println();
         System.out.println();
         System.out.println(new BuilderHelper(SQLQueryBuilderFactory.DB.MYSQL).buildRequiredSQL());
-        SQLQueryBuilder queryBuilder = SQLQueryBuilderFactory.createSqlQueryBuilder(SQLQueryBuilderFactory.DB.ORACLE);
-        System.out.print(queryBuilder.from("TABLE").build());
+        System.out.println();
+        System.out.println();
+        SQLQueryBuilder builder = SQLQueryBuilderFactory.createSqlQueryBuilder(SQLQueryBuilderFactory.DB.MSSQL);
+        System.out.println(builder.from("Order")
+                .join(SQLQueryBuilder.JOINS.INNER_JOIN, "Order", "CustomerId", "Customer", "Id")
+                .join(SQLQueryBuilder.JOINS.LEFT_JOIN, "Customer", "CityId", "City", "Id")
+                .output("Order", "TotalPrice", SQLQueryBuilder.AGGREGATE.SUM)
+                .output("Customer", "FirstName")
+                .output("Customer", "LastName")
+                .output("City", "Name")
+                .groupBy("Customer", "FirstName")
+                .groupBy("Customer", "LastName")
+                .groupBy("City", "Name")
+                .orderBy("Customer", "LastName")
+                .limit(5).build());
     }
 
 }
