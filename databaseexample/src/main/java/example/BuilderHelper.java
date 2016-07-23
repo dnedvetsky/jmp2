@@ -1,22 +1,23 @@
-package sqlbuilder;
+package example;
 
 import factory.SQLQueryBuilderFactory;
+import sqlbuilder.SQLQueryBuilder;
 
 /**
  * Used to help with building queries; DB type can be specified - helpful in output;
  */
-public class BuilderHelper {
+class BuilderHelper {
     private SQLQueryBuilder msSqlQueryBuilder;
 
-    public BuilderHelper(SQLQueryBuilderFactory.DB db) {
+    BuilderHelper(SQLQueryBuilderFactory.DB db) {
         this.msSqlQueryBuilder = SQLQueryBuilderFactory.createSqlQueryBuilder(db);
     }
 
-    public String buildRequiredSQL() {
+    String buildRequiredSQL() {
         return msSqlQueryBuilder.from("Order")
-                .join(MsSQLQueryBuilder.JOINS.INNER_JOIN, "Order", "CustomerId", "Customer", "Id")
-                .join(MsSQLQueryBuilder.JOINS.LEFT_JOIN, "Customer", "CityId", "City", "Id")
-                .output("Order", "TotalPrice", MsSQLQueryBuilder.AGGREGATE.SUM)
+                .join(SQLQueryBuilder.JOINS.INNER_JOIN, "Order", "CustomerId", "Customer", "Id")
+                .join(SQLQueryBuilder.JOINS.LEFT_JOIN, "Customer", "CityId", "City", "Id")
+                .output("Order", "TotalPrice", SQLQueryBuilder.AGGREGATE.SUM)
                 .output("Customer", "FirstName")
                 .output("Customer", "LastName")
                 .output("City", "Name")

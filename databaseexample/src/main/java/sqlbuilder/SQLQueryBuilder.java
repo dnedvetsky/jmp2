@@ -22,7 +22,7 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
     /**
      * Used to set JOINER type
      */
-    enum JOINS {
+    public enum JOINS {
         INNER_JOIN {
             @Override
             public String toString() {
@@ -41,7 +41,7 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
     /**
      * Used to get aggregation type
      */
-    enum AGGREGATE {
+    public enum AGGREGATE {
         SUM {
             @Override
             public String toString() {
@@ -55,7 +55,7 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
      *
      * @param top - limiter type
      */
-    public SQLQueryBuilder(String top) {
+     SQLQueryBuilder(String top) {
         LIMITER = top;
     }
 
@@ -64,7 +64,6 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
      *
      * @param table  table
      * @param column column
-     * @return
      */
     public SQLQueryBuilder output(String table, String column) {
         SELECT.add(buildTableColumn(table, column));
@@ -77,7 +76,6 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
      * @param table     table
      * @param column    column
      * @param aggregate aggregation type
-     * @return
      */
     public SQLQueryBuilder output(String table, String column, MsSQLQueryBuilder.AGGREGATE aggregate) {
         SELECT.add(String.format("%s(%s)", aggregate, buildTableColumn(table, column)));
@@ -88,10 +86,9 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
      * Specify from which table the actions are performed
      *
      * @param fromTable - from table value
-     * @return
      */
     public SQLQueryBuilder from(String fromTable) {
-        addFieldValueToShortLink(fromTable);
+        addTableValueToShortLink(fromTable);
         FROM.add(String.format("%s %s", fromTable, getTableValueFromShortLink(fromTable)));
         return this;
     }
@@ -101,7 +98,6 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
      *
      * @param table  table (will be changed to shortcut)
      * @param column column
-     * @return
      */
     public SQLQueryBuilder groupBy(String table, String column) {
         GROUPBY.add(buildTableColumn(table, column));
@@ -113,7 +109,6 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
      *
      * @param table  - table name
      * @param column - column name
-     * @return
      */
     public SQLQueryBuilder orderBy(String table, String column) {
         ORDERBY.add(buildTableColumn(table, column));
@@ -124,7 +119,6 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
      * Sets limiter to a table;
      *
      * @param i - number of rows displayed
-     * @return
      */
     public SQLQueryBuilder limit(int i) {
         this.limitValue = i;
@@ -139,10 +133,9 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
      * @param column  column in table no 1
      * @param table2  table no 2
      * @param column2 column in table no 2
-     * @return
      */
     public SQLQueryBuilder join(MsSQLQueryBuilder.JOINS joins, String table, String column, String table2, String column2) {
-        addFieldValueToShortLink(table2);
+        addTableValueToShortLink(table2);
         String mainJoinPart = String.format("%s %s %s", joins, table2, getTableValueFromShortLink(table2));
         String joinEqualsPart = String.format("%s.%s = %s.%s", getTableValueFromShortLink(table), column,
                 getTableValueFromShortLink(table2), column2);
@@ -154,7 +147,7 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
      * Parses HashMap and acquires shortling from the according to a key value
      *
      * @param table - table to get short link to it
-     * @return
+     * @return string
      */
     private String getTableValueFromShortLink(String table) {
         String shortlink;
@@ -168,20 +161,20 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
      * Method is used to generate shortlinks to tables that is being added to a query
      * Builds it according to a first unique values passed;
      *
-     * @param field
+     * @param table table
      */
-    private void addFieldValueToShortLink(String field) {
+    private void addTableValueToShortLink(String table) {
         String fieldShortLink;
         int i = 0;
-        if (SHORTLINKS.containsKey(field))
+        if (SHORTLINKS.containsKey(table))
             return;
         do {
-            fieldShortLink = field.substring(0, ++i);
-            if (i >= field.length()) {
+            fieldShortLink = table.substring(0, ++i);
+            if (i >= table.length()) {
                 fieldShortLink += i;
             }
         } while (SHORTLINKS.containsValue(fieldShortLink));
-        SHORTLINKS.put(field, fieldShortLink);
+        SHORTLINKS.put(table, fieldShortLink);
     }
 
     /**
@@ -189,7 +182,7 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
      *
      * @param table  - table name;
      * @param column - column name;
-     * @return
+     * @return string
      */
     private String buildTableColumn(String table, String column) {
         return String.format("%s.%s", getTableValueFromShortLink(table), column);
@@ -201,7 +194,7 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
      *
      * @param arrayList - array with values;
      * @param delimeter - delimeter;
-     * @return
+     * @return string
      */
     private String joinByDelimeter(ArrayList<String> arrayList, String delimeter) {
         StringJoiner tableColumnsJoin = new StringJoiner(delimeter);
@@ -214,8 +207,8 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
     /**
      * Used to join columns or tables - with , delimeter
      *
-     * @param arrayList
-     * @return
+     * @param arrayList - columns to join
+     * @return string
      */
     private String joinColumns(ArrayList<String> arrayList) {
         return arrayList.isEmpty() ? "" : joinByDelimeter(arrayList, ", ");
@@ -226,7 +219,7 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
      *
      * @param formatter - SQL formatter
      * @param joins     - values to join under a formatter
-     * @return
+     * @return String with ignoring empty data
      */
     private String ignoreEmpty(String formatter, ArrayList<String> joins) {
         String joinedData = joinColumns(joins);
@@ -236,8 +229,8 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
     /**
      * Jins join toghether in case new values are being added
      *
-     * @param join
-     * @return
+     * @param join array of joins to join
+     * @return joined joins
      */
     private String joinJoins(ArrayList<String> join) {
         return joinByDelimeter(join, "\r\n");
@@ -246,7 +239,7 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
     /**
      * Method used to build SQL query - it fills SqlQuery object with data and then parses it, returning SQL statement
      *
-     * @return
+     * @return String
      */
     public String build() {
         sqlQuery.setSELECT(ignoreEmpty("SELECT %s", SELECT));
@@ -263,7 +256,7 @@ public abstract class SQLQueryBuilder implements QueryBuilder {
      * Used to generate accurate string - without empty values and etc.
      *
      * @param sqlQuery - object of SQL query class from which values is acquired
-     * @return
+     * @return string query
      */
     private String generateCorrectBuildedSQLQuery(SqlQuery sqlQuery) {
         StringJoiner joiner = new StringJoiner("\n\r");
