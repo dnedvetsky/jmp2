@@ -20,7 +20,7 @@ public class SQLQueryBuilderFactory {
     }
 
     /**
-     * Creates instance of SQLQueryBuilder with specified LIMITER;
+     * Creates instance of MsSQLQueryBuilder with specified LIMITER;
      * It is possible to return exact class representation of MySQL Oracle or MsSQL just by implementing inheritance;
      * @param factoryType
      * @return
@@ -29,13 +29,13 @@ public class SQLQueryBuilderFactory {
         SQLQueryBuilder factoredBuilder = null;
         switch (factoryType) {
             case MSSQL:
-                factoredBuilder = new SQLQueryBuilder(factoryType.getValue());
+                factoredBuilder = new MsSQLQueryBuilder();
                 break;
             case MYSQL:
-                factoredBuilder = new SQLQueryBuilder(factoryType.getValue());
+                factoredBuilder = new MySQLQueryBuilder();
                 break;
             case ORACLE:
-                factoredBuilder = new SQLQueryBuilder(factoryType.getValue());
+                factoredBuilder = new OracleQueryBuilder();
                 break;
         }
         return factoredBuilder;

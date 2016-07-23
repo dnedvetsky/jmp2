@@ -1,5 +1,6 @@
 import factory.SQLQueryBuilderFactory;
 import sqlbuilder.BuilderHelper;
+import sqlbuilder.SQLQueryBuilder;
 
 public class main {
     public static void main(String[] args) {
@@ -13,6 +14,8 @@ public class main {
         System.out.println();
         System.out.println();
         System.out.println(new BuilderHelper(SQLQueryBuilderFactory.DB.MYSQL).buildRequiredSQL());
+        SQLQueryBuilder queryBuilder = SQLQueryBuilderFactory.createSqlQueryBuilder(SQLQueryBuilderFactory.DB.ORACLE);
+        System.out.print(queryBuilder.from("TABLE").build());
     }
 
 }

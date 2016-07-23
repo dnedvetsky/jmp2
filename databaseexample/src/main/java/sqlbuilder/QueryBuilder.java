@@ -14,6 +14,6 @@ public interface QueryBuilder {
 
     public QueryBuilder limit(int i);
 
-    public QueryBuilder join(SQLQueryBuilder.JOINS joins, String table, String column, String table2, String column2);
+    public QueryBuilder join(MsSQLQueryBuilder.JOINS joins, String table, String column, String table2, String column2);
 
 }

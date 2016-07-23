@@ -1,18 +1,22 @@
 package sqlbuilder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringJoiner;
 
 /**
- * Builder should be able to build following statement:
- * SELECT SUM(O.TotalPrice), C.FirstName, C.LastName, CI.Name
- * FROM Order O
- * JOIN Customer C ON O.CustomerId = C.Id
- * LEFT JOIN City CI ON C.CityId = CI.Name
- * GROUP BY C.FirstName, C.LastName, CI.Name
- * ORDER BY C.LastName ASC
- * LIMIT 5
+ * This is an abstract query builder class
  */
-public class SQLQueryBuilder extends AbstractQueryBuilder {
+public abstract class SQLQueryBuilder implements QueryBuilder {
+    private ArrayList<String> FROM = new ArrayList<>();
+    private ArrayList<String> SELECT = new ArrayList<>();
+    private ArrayList<String> JOIN = new ArrayList<>();
+    private ArrayList<String> GROUPBY = new ArrayList<>();
+    private ArrayList<String> ORDERBY = new ArrayList<>();
+    private String LIMITER;
+    private int limitValue;
+    private Map<String, String> SHORTLINKS = new HashMap<>();
     private SqlQuery sqlQuery = new SqlQuery();
 
     /**
@@ -68,14 +72,14 @@ public class SQLQueryBuilder extends AbstractQueryBuilder {
     }
 
     /**
-     * Specified select. Method uses {@link AGGREGATE} to get aggregation type
+     * Specified select. Method uses {@link MsSQLQueryBuilder.AGGREGATE} to get aggregation type
      *
      * @param table     table
      * @param column    column
      * @param aggregate aggregation type
      * @return
      */
-    public SQLQueryBuilder output(String table, String column, AGGREGATE aggregate) {
+    public SQLQueryBuilder output(String table, String column, MsSQLQueryBuilder.AGGREGATE aggregate) {
         SELECT.add(String.format("%s(%s)", aggregate, buildTableColumn(table, column)));
         return this;
     }
@@ -130,14 +134,14 @@ public class SQLQueryBuilder extends AbstractQueryBuilder {
     /**
      * A Join method - use it to build query in order to join some tables
      *
-     * @param joins   joining type. {@link JOINS} for more reference
+     * @param joins   joining type. {@link MsSQLQueryBuilder.JOINS} for more reference
      * @param table   table no 1
      * @param column  column in table no 1
      * @param table2  table no 2
      * @param column2 column in table no 2
      * @return
      */
-    public SQLQueryBuilder join(JOINS joins, String table, String column, String table2, String column2) {
+    public SQLQueryBuilder join(MsSQLQueryBuilder.JOINS joins, String table, String column, String table2, String column2) {
         addFieldValueToShortLink(table2);
         String mainJoinPart = String.format("%s %s %s", joins, table2, getTableValueFromShortLink(table2));
         String joinEqualsPart = String.format("%s.%s = %s.%s", getTableValueFromShortLink(table), column,
@@ -271,7 +275,7 @@ public class SQLQueryBuilder extends AbstractQueryBuilder {
         sqlQueryValues.add(sqlQuery.getORDERBY());
         sqlQueryValues.add(sqlQuery.getLIMITER());
         for (String sqlValue : sqlQueryValues) {
-            if (sqlValue != null) joiner.add(sqlValue);
+            if (sqlValue != null && !sqlValue.isEmpty()) joiner.add(sqlValue);
         }
         return joiner.toString();
     }
